@@ -1,0 +1,13 @@
+apiVersion: jk.jk.com/v1
+kind: MyApp
+metadata:
+  labels:
+    app.kubernetes.io/name: myoperator
+    app.kubernetes.io/managed-by: kustomize
+  name: myapp-sample
+spec:
+  # TODO(user): Add fields here
+  image: nginx
+  servicePort: 50080
+  containerPort: 80
+  replicas: 2
