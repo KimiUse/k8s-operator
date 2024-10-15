@@ -24,8 +24,10 @@ kubebuilder init --domain xxx.com
 kubebuilder create api --group myapp --version v1 --kind MyApp
 ```
 ## 发布
+自定义Controller是以deploy的形式在k8s中运行的,因此开发完成后打包成docker镜像推送至远程仓库后即可使用
 ```shell
-# 自定义Controller是以deploy的形式在k8s中运行的,因此开发完成后打包成docker镜像推送至远程仓库后即可使用
+# build
 docker build -t xxxx.xxx-xxx/myapp-controller:xxx .
+# push
 docker push xxxx.xxx-xxx/myapp-controller:xxx
 ```
