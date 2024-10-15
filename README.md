@@ -1,114 +1,31 @@
-# myoperator
-// TODO(user): Add simple overview of use/purpose
+# operator
+k8s中自定义资源(CRD)+自定义Controller
+## client-go
+是 Kubernetes 提供的一个官方 Go 语言客户端库，用于与 Kubernetes API 进行交互。开发者可以使用 client-go 来编写与 Kubernetes 集群交互的 Go 语言程序，比如创建、更新、删除、查询 Kubernetes 资源，管理集群中的对象等。
+## Kubebuilder
+Kubebuilder 是一个基于 client-go 的开发框架，用来简化 Kubernetes 控制器和 Operator 的开发。它通过提供工具和脚手架，使开发者可以更快地创建自定义资源（CRD）及其控制器，而不必手动处理所有的 client-go 细节。
+## 核心机制
+* Informer: Kubebuilder 使用 client-go 的 Informer 机制来监听 Kubernetes 资源事件，但 Kubebuilder 将它封装成更易用的 API。
+* Client: Kubebuilder 通过 controller-runtime 提供了简化的客户端，用于创建、更新、删除、获取 Kubernetes 资源。这个客户端是对 client-go 的进一步封装，简化了 API 请求的流程。
+* Reconciler：控制器的核心是 Reconcile 循环，它根据资源的当前状态与期望状态之间的差异，执行相应的操作。Kubebuilder 使用 client-go 进行这些资源状态的变更和同步操作。
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
-
-## Getting Started
-
-### Prerequisites
-- go version v1.22.0+
-- docker version 17.03+.
-- kubectl version v1.11.3+.
-- Access to a Kubernetes v1.11.3+ cluster.
-
-### To Deploy on the cluster
-**Build and push your image to the location specified by `IMG`:**
-
-```sh
-make docker-build docker-push IMG=<some-registry>/myoperator:tag
+## 开发流程
+* 借助CustomResourceDefinition自定义资源
+* 创建空项目
+```shell
+go mode init myopertor
 ```
-
-**NOTE:** This image ought to be published in the personal registry you specified.
-And it is required to have access to pull the image from the working environment.
-Make sure you have the proper permission to the registry if the above commands don’t work.
-
-**Install the CRDs into the cluster:**
-
-```sh
-make install
+* 初始化kubebuilder
+```shell
+kubebuilder init --domain xxx.com
 ```
-
-**Deploy the Manager to the cluster with the image specified by `IMG`:**
-
-```sh
-make deploy IMG=<some-registry>/myoperator:tag
+* 创建api
+```shell
+kubebuilder create api --group myapp --version v1 --kind MyApp
 ```
-
-> **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
-privileges or be logged in as admin.
-
-**Create instances of your solution**
-You can apply the samples (examples) from the config/sample:
-
-```sh
-kubectl apply -k config/samples/
+## 发布
+```shell
+# 自定义Controller是以deploy的形式在k8s中运行的,因此开发完成后打包成docker镜像推送至远程仓库后即可使用
+docker build -t xxxx.xxx-xxx/myapp-controller:xxx .
+docker push xxxx.xxx-xxx/myapp-controller:xxx
 ```
-
->**NOTE**: Ensure that the samples has default values to test it out.
-
-### To Uninstall
-**Delete the instances (CRs) from the cluster:**
-
-```sh
-kubectl delete -k config/samples/
-```
-
-**Delete the APIs(CRDs) from the cluster:**
-
-```sh
-make uninstall
-```
-
-**UnDeploy the controller from the cluster:**
-
-```sh
-make undeploy
-```
-
-## Project Distribution
-
-Following are the steps to build the installer and distribute this project to users.
-
-1. Build the installer for the image built and published in the registry:
-
-```sh
-make build-installer IMG=<some-registry>/myoperator:tag
-```
-
-NOTE: The makefile target mentioned above generates an 'install.yaml'
-file in the dist directory. This file contains all the resources built
-with Kustomize, which are necessary to install this project without
-its dependencies.
-
-2. Using the installer
-
-Users can just run kubectl apply -f <URL for YAML BUNDLE> to install the project, i.e.:
-
-```sh
-kubectl apply -f https://raw.githubusercontent.com/<org>/myoperator/<tag or branch>/dist/install.yaml
-```
-
-## Contributing
-// TODO(user): Add detailed information on how you would like others to contribute to this project
-
-**NOTE:** Run `make help` for more information on all potential `make` targets
-
-More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
-
-## License
-
-Copyright 2024.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
